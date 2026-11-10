@@ -71,7 +71,7 @@ The real build, step by step (the board on the bench, then mounted in the false 
 | ![Installed at the central](docs/photos/10-installed-at-central.jpg) | ![ESP32 in the ceiling](docs/photos/12-esp32-in-ceiling.jpg) |
 | Everything connected at the central: buck (black box) and RS485 module hanging next to it. | The ESP32 resting on the ceiling board, powered by the buck's USB output. |
 | ![RS485 module](docs/photos/13-rs485-module-hanging.jpg) | |
-| The RS485 module hangs on its short wires next to the central (a small 3D-printed box is planned). | |
+| The RS485 module hanging on its short wires next to the central. Both boards have since been put in small 3D-printed boxes. | |
 
 ## Modbus settings
 
@@ -115,7 +115,8 @@ Notes:
 - The example uses register 8 for every zone: when a zone has its own thermostat it matches register 10, and it still works for a zone that has only a damper and no thermostat (register 10 = 0).
 - **Not supported by this central** (the AZCE6IBPRO6 answers with a Modbus exception): zone humidity (zone register 31) and energy consumption (system register 107), although they appear in the Airzone documentation for other centrals. They are not in the firmware.
 - System register 4 (date/time) is writable; this firmware never writes it.
-- Radio thermostats may appear in register 9 only a few minutes after the central powers up.
+- After the central powers up, radio thermostats may appear in system register 9 (zones present) only a few minutes later. Until then the registers of those zones answer with Modbus exception 11 and their values are not updated; touching the thermostat wakes it up at once.
+- The central keeps a separate setpoint for heating and for cooling: when the installation mode changes, zone register 3 shows the setpoint of the new mode.
 - The Think thermostats are battery-powered e-ink devices: they show changes made over Modbus only after you touch them or after a few minutes.
 
 ## The climate component
@@ -139,7 +140,7 @@ The `System mode control` select in `airzone.yaml` changes the installation mode
 
 ## Getting started
 
-1. Install ESPHome (`pip install esphome`, or the ESPHome add-on / dashboard).
+1. Install ESPHome (`pip install esphome`, or the ESPHome add-on / dashboard). Built and tested with ESPHome 2026.6.5.
 2. Copy the `esphome/` folder, then `cp secrets.yaml.example secrets.yaml` and fill in Wi-Fi, fallback hotspot password, API encryption key and OTA password.
 3. Adapt `airzone.yaml` (see below), then `esphome run airzone.yaml` (first flash over USB, then OTA).
 4. Add the device in Home Assistant (ESPHome integration), using the API key from `secrets.yaml`.
